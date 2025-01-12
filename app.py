@@ -16,12 +16,11 @@ if "auth_page" not in st.session_state:
 
 if "traitement" not in st.session_state:
         st.session_state["traitement"] = None
-        
+
 if "selected_model" not in st.session_state:
     st.session_state["selected_model"] = None
 
 
-# Barre latérale pour le login/logout et la liste des sessions
 with st.sidebar:
     if st.session_state.user:
         st.markdown(f"### Connecté : {st.session_state.user['firstname']}")
