@@ -110,9 +110,9 @@ def render_chat_interface():
             json_data = {key: float(value) for key, value in inputs.items()}
             json_data["traitement"] = traitement
             json_data["model"] = selected_model
-
+            add_message(session_id, "bot", f"Réponse automatique à : {json_data}")
             st.json(json_data) 
-
+            st.rerun()
         except ValueError as e:
             st.error(f"Erreur : Veuillez saisir uniquement des nombres pour tous les paramètres.")
 
