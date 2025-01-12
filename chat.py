@@ -43,10 +43,10 @@ def render_chat_interface():
 
     if modal.is_open():
         with modal.container():
-            if traitement in tips:
-                st.info(tips[traitement])
             st.subheader("Choisissez le type de traitement")
             traitement = st.radio("Type de traitement", ["Classification", "Regression"], key="traitement_modal")
+            if traitement in tips:
+                st.info(tips[traitement])
 
             # Afficher les modèles associés au type de traitement sélectionné
             model_options = list(models[traitement].keys())
