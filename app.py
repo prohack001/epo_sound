@@ -1,7 +1,8 @@
 import streamlit as st
-from auth import login, logout
+from auth import login, logout,signup_page,sign_in
 from chat import *
 from database import init_db , get_user_sessions , create_new_session
+
 
 # Initialisation de la base de données
 init_db()
@@ -10,22 +11,46 @@ init_db()
 if "user" not in st.session_state:
     st.session_state.user = None
 
+if "auth_page" not in st.session_state:
+    st.session_state["auth_page"] = "signin" 
+
+if "traitement" not in st.session_state:
+        st.session_state["traitement"] = None
+        
+if "selected_model" not in st.session_state:
+    st.session_state["selected_model"] = None
+
+
 # Barre latérale pour le login/logout et la liste des sessions
 with st.sidebar:
     if st.session_state.user:
-        st.markdown(f"### Connecté : {st.session_state.user['username']}")
+        st.markdown(f"### Connecté : {st.session_state.user['firstname']}")
         if st.button("Déconnexion"):
             logout()
     else:
-        login()
+        if st.session_state["auth_page"] == "signin":
+            sign_in()
+            if st.button("Créer un compte"):
+                st.session_state["auth_page"] = "signup"
+                st.rerun()
+            # if st.markdown("Pas encore de compte ? [Créer un compte](#)", unsafe_allow_html=True):
+            #     st.session_state["auth_page"] = "signup"
+                # st.rerun()  
+        elif st.session_state["auth_page"] == "signup":
+            signup_page()
+            if st.button("Se connecter"):
+                st.session_state["auth_page"] = "signin"
+                st.rerun()
 
     if st.session_state.user:
         st.markdown("## Mes sessions")
-        user_id = st.session_state.user["id"]
+        user_id = st.session_state.user["uid"]
         sessions = get_user_sessions(user_id)
 
         # Affichage des sessions dans la barre latérale
-        for session_id, session_name in sessions:
+        for session in sessions:
+            session_id = session['id']
+            session_name = session['session_name']
             if st.button(session_name, key=f"session_{session_id}"):
                 st.session_state.current_session = session_id
                 st.rerun()
