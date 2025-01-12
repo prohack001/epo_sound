@@ -30,6 +30,7 @@ modal = Modal(key="choix_modal", title="Choisir un mode", max_width=600)
 # Interface principale du chat
 def render_chat_interface():
     inputs = {}
+    
     if st.session_state["selected_model"]:
         traitement = st.session_state["traitement"]
         selected_model = st.session_state["selected_model"]
@@ -39,6 +40,7 @@ def render_chat_interface():
 
     if "current_session" not in st.session_state:
         st.write("Veuillez sélectionner ou créer une session de chat.")
+        modal.open()
         return
 
     if modal.is_open():
@@ -92,6 +94,14 @@ def render_chat_interface():
     # Affichage des messages
     for message_data in messages:
         sender = message_data['sender']
+        if sender == "bot":
+            message = message_data['prediction']
+            if message ==0:
+                message="environnement"
+            elif message==2:
+                message=="souffle"
+            else:
+                message=="grésillement"
         message = message_data['message']
         
         if sender == "bot":
@@ -105,7 +115,14 @@ def render_chat_interface():
         
         st.write("Veuillez remplir les champs suivants :")
     
-        # Générer les champs d'entrée dynamiques en fonction du modèle sélectionné
+
+        # params = models[traitement][selected_model]
+        # default_data = {param: [0.0] for param in params}  # Valeurs par défaut
+        # table_data = st.data_editor(default_data, key="data_editor", num_rows=1)  # Tableau avec une seule ligne
+
+        # incomplete_fields = any(value == 0.0 for value in table_data.values())
+
+
         for param in models[traitement][selected_model]:
             inputs[param] = st.text_input(f"Paramètre {param}", key=f"{param}_input")
     # Zone de saisie flottante
@@ -115,9 +132,9 @@ def render_chat_interface():
         try:
             # Convertir toutes les entrées en float et construire le JSON
             json_data = {key: float(value) for key, value in inputs.items()}
-            json_data["traitement"] = traitement
-            json_data["model"] = selected_model
-            add_message(session_id, "bot", f"Réponse automatique à : {json_data}")
+            json_data["model_type"] = traitement
+            json_data["algorythm"] = selected_model
+            add_message(session_id, st.session_state.user["username"], json_data)
             st.json(json_data) 
             st.rerun()
         except ValueError as e:

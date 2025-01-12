@@ -95,12 +95,10 @@ def sign_in():
     if login_button:
         with st.spinner("Connexion en cours..."):
             try:
-                # Simule un délai pour la connexion
-                time.sleep(2)
-                # Appel à la fonction de connexion
+               
                 response = login(email, password)
                 if response['success']:
-                    st.success(response["message"])
+                    st.success("connexion réussie")
                     st.balloons()
                     st.experimental_set_query_params(page="dashboard")
             except ValueError as e:

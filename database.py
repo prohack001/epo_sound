@@ -42,7 +42,7 @@ def get_session_messages(session_id):
 
 def add_message(session_id, sender, message):
     """Appelle l'API pour envoyer un message dans une session."""
-    response = requests.post(f"{API_BASE_URL}/message",headers=get_headers(), json={"session_id": session_id, "message": message})
+    response = requests.post(f"{API_BASE_URL}/message",headers=get_headers(), json={"session_id": session_id,"sender":sender ,"message": message})
     print(response.json())
     return response.status_code == 201  # Retourne True si le message a été ajouté avec succès
 
