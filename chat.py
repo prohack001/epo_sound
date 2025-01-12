@@ -19,6 +19,11 @@ models = {
     }
 }
 
+tips = {
+    "Classification": "La meilleure classification, c’est **Random Forest Classifier** avec un score de 0.94.",
+    "Regression": "La meilleure régression, c’est **Bagging Regressor** avec un RMSE de 0.38."
+}
+
 
 modal = Modal(key="choix_modal", title="Choisir un mode", max_width=600)
 
@@ -38,6 +43,8 @@ def render_chat_interface():
 
     if modal.is_open():
         with modal.container():
+            if traitement in tips:
+                st.info(tips[traitement])
             st.subheader("Choisissez le type de traitement")
             traitement = st.radio("Type de traitement", ["Classification", "Regression"], key="traitement_modal")
 
