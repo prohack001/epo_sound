@@ -66,14 +66,16 @@ def render_chat_interface():
     st.markdown("""
     <style>
         .user-message {
-            background-color: #e0f7fa;
+            background-color: #041f5e;
+            color:white;
             padding: 10px;
             border-radius: 10px;
             margin: 5px;
             text-align: right;
         }
         .bot-message {
-            background-color: #ffecb3;
+            background-color: #297d18;
+            color:white;
             padding: 10px;
             border-radius: 10px;
             margin: 5px;
