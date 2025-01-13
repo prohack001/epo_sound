@@ -49,10 +49,10 @@ def signup_page():
             st.warning("Vous devez accepter les Termes et Conditions pour continuer.")
         else:
             user_data = {
-                "firstname": firstname,
-                "lastname": lastname,
-                "email": email,
-                "password": password,
+                "firstname": firstname.strip(),
+                "lastname": lastname.strip(),
+                "email": email.strip(),
+                "password": password.strip(),
             }
             # Appel à l'API
             with st.spinner("Enregistrement en cours..."):
@@ -65,6 +65,7 @@ def signup_page():
             elif response.get("message"):
                 st.session_state.success_message = response["message"]
                 st.session_state.error_message = None
+                st.session_state["auth_page"] = "signin"
                 # Redirection simulée après succès
                 st.rerun()
                 
@@ -95,8 +96,8 @@ def sign_in():
     if login_button:
         with st.spinner("Connexion en cours..."):
             try:
-               
-                response = login(email, password)
+                print(f"{email.strip()}")
+                response = login(email.strip(), password.strip())
                 if response['success']:
                     st.success("connexion réussie")
                     st.balloons()

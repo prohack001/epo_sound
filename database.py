@@ -1,7 +1,7 @@
 import requests
 import streamlit as st
 # URL de base de l'API
-API_BASE_URL = "https://audio-u7r5.onrender.com/api"  # Remplacez par l'URL de votre API
+API_BASE_URL = "https://audio-u7r5.onrender.com/api" 
 
 def set_token(access_token):
     global token
