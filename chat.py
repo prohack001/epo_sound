@@ -4,24 +4,24 @@ import json
 from streamlit_modal import Modal
 
 models = {
-    "Classification": {
-        "Arbre de décision": ["Vn", "ZCR", "SF", "CGS", "CS"],
-        "Bagging": ["Vn", "ZCR", "SF", "CGS"],
-        "AdaBoost": ["Vn", "ZCR", "SF", "CGS", "CS"],
-        "Random Forest": ["Vn", "ZCR", "SF", "CGS", "CS"]
+    "classification": {
+        "decision_tree": ["Vn", "ZCR", "SF", "CGS", "CS"],
+        "bagging": ["Vn", "ZCR", "SF", "CGS"],
+        "adaBoost": ["Vn", "ZCR", "SF", "CGS", "CS"],
+        "random_forest": ["Vn", "ZCR", "SF", "CGS", "CS"]
     },
-    "Regression": {
-        "Arbre de décision": ["Vn", "ZCR", "CGS", "SNR"],
-        "Bagging": ["Vn", "ZCR", "CGS", "SNR"],
-        "Random Forest": ["Vn", "ZCR", "CGS", "SNR"],
-        "SVM non lineaire": ["Vn", "ZCR", "SF", "SNR"],
-        "Ridge": ["Vn", "ZCR", "CGS", "SNR"]
+    "regression": {
+        "decision_tree": ["Vn", "ZCR", "CGS", "SNR"],
+        "bagging": ["Vn", "ZCR", "CGS", "SNR"],
+        "random_forest": ["Vn", "ZCR", "CGS", "SNR"],
+        "svm": ["ZCR", "Vn", "SNR", "SF"],
+        "ridge": ["ZCR", "Vn", "SNR", "CGS"]
     }
 }
 
 tips = {
-    "Classification": "La meilleure classification, c’est **Random Forest Classifier** avec un score de 0.94.",
-    "Regression": "La meilleure régression, c’est **Bagging Regressor** avec un RMSE de 0.38."
+    "classification": "La meilleure classification, c’est **Random Forest Classifier** avec un score de 0.94.",
+    "regression": "La meilleure régression, c’est **Bagging Regressor** avec un RMSE de 0.38."
 }
 
 
@@ -46,7 +46,7 @@ def render_chat_interface():
     if modal.is_open():
         with modal.container():
             st.subheader("Choisissez le type de traitement")
-            traitement = st.radio("Type de traitement", ["Classification", "Regression"], key="traitement_modal")
+            traitement = st.radio("Type de traitement", ["classification", "regression"], key="traitement_modal")
             if traitement in tips:
                 st.info(tips[traitement])
 
@@ -96,13 +96,29 @@ def render_chat_interface():
         sender = message_data['sender']
         if sender == "bot":
             message = message_data['prediction']
-            if message ==0:
-                message="environnement"
-            elif message==2:
-                message=="souffle"
+            if message_data['model_type']=="classification":
+                print("rentre")
+                message = int(message_data['prediction'])
+                if message == 0:
+                    message="environnement"
+                elif message== 2:
+                    message="souffle"
+                else:
+                    message="grésillement"
             else:
-                message=="grésillement"
-        message = message_data['message']
+                if 0 <= message <= 1:
+                    message= "qualité médiocre"
+                elif 1 < message <= 2:
+                    message ="qualité faible"
+                elif 2 < message <= 3:
+                    message ="qualité moyenne"
+                elif 3 < message <= 4:
+                    message ="qualité bonne"
+                elif 4 < message <= 5:
+                    message ="qualité excellente"
+                
+        else:
+            message = message_data['message']
         
         if sender == "bot":
             st.markdown(f"<div class='bot-message'>{message}</div>", unsafe_allow_html=True)
@@ -131,10 +147,29 @@ def render_chat_interface():
     if st.button("Envoyer"):
         try:
             # Convertir toutes les entrées en float et construire le JSON
-            json_data = {key: float(value) for key, value in inputs.items()}
-            json_data["model_type"] = traitement
-            json_data["algorythm"] = selected_model
-            add_message(session_id, st.session_state.user["username"], json_data)
+            
+            #json_data={}
+            json_data = {
+                "session_id": st.session_state.current_session, 
+                "message": { key: float(value) for key, value in inputs.items() },
+                "model_type": traitement,
+                "algorithm": selected_model
+            }
+            # json_data["session_id"] = int(st.session_state.current_session)
+            # json_data["message"] = {key: float(value) for key, value in inputs.items()}
+            # json_data["model_type"] = traitement
+            # json_data["algorithm"] = selected_model
+
+            # Conversion en chaîne JSON formatée
+            json_formatted = json.dumps(json_data, indent=None, separators=(', ', ': '))
+            # json_data["session_id"]=st.session_state.current_session
+            # json_data["message"]={key: float(value) for key, value in inputs.items()}
+            # json_data["model_type"] = traitement
+            # json_data["algorithm"] = selected_model
+            print("json_sata: ",json_data)
+            #message_json = json.dumps(json_data, indent=1)
+            print("message_json: ",json_formatted)
+            add_message(json_data)
             st.json(json_data) 
             st.rerun()
         except ValueError as e:
