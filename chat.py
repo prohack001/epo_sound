@@ -123,9 +123,9 @@ def render_chat_interface():
             message = message_data['message']
         
         if sender == "bot":
-            st.markdown(f"<div class='bot-message'>{message}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='bot-message'>🤖{message}</div>", unsafe_allow_html=True)
         else:
-            st.markdown(f"<div class='user-message'>{message}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='user-message'>{message}👨</div>", unsafe_allow_html=True)
 
     if st.session_state["selected_model"]:
         
